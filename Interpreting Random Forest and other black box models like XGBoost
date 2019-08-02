@@ -1,2 +1,55 @@
 # feature-importance
 Interpreting Random Forest and other black box models like XGBoost
+
+Overall interpretation
+The overall interpretation already comes out of the box in most models in Python, with the “feature_importances_” 
+
+rf_model = rf.fit(cr_x,cr_y)
+pd.DataFrame({'Variable':cr_x.columns,
+              'Importance':rf.feature_importances_}).sort_values('Importance', ascending=False)
+
+    Variable  Importance
+5     fare    0.280775 
+2      age    0.275131 
+1      sex    0.257138 
+0     pclass  0.079260 
+4     parch   0.037561 
+3     sibsp   0.037415 
+6    embarked 0.032720 
+
+from xgboost import XGBClassifier
+xg = XGBClassifier()
+xg.fit(cr_x,cr_y)
+pd.DataFrame({'Variable':cr_x.columns,
+              'Importance':xg.feature_importances_}).sort_values('Importance', ascending=False)
+              
+    Variable  Importance
+ 1    sex       0.639088 
+ 0    pclass    0.172231 
+ 3    sibsp     0.055973 
+ 2    age       0.041677 
+ 6    embarked  0.039759 
+ 5    fare      0.036684 
+ 4    parch     0.014588 
+
+#This a great way to 
+#1 identify the variables with the best predictive power
+
+#2 raise issues/correct bugs: variables that have too much importance compared to others. 
+
+#Example: In a previous project, we worked with biased data: data of class 1 had a lot of missing values in a variable, 
+#that data of class 0 did not. We didn’t realize it until we looked at the feature importance table. 
+#The model learnt that if the data is missing, it belongs to class 1. 
+#We solved it by sampling the missing values with data from class 0
+
+#3update your model with new variables. To see whether a new variable is relevant to your model, 
+#compute both the feature importances for the model before (without the new variable), 
+#and for the model after (with the new variable). 
+#Analyze the shifts the new variable produces in the feature importances table.
+#Example: when doing feature engineering, you can come up with a more relevant feature, 
+#but introducing it in your data will probably cut the feature importances of features 
+#directly correlated to the new feature.
+
+#4compare different models: compare the feature importances for two different models 
+#(RandomForest vs XGBoost for instance) by comparing how important the variables are. 
+#It can help to see if a model grasps the predictive power of a variable
